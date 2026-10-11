@@ -1,27 +1,6 @@
 {
   "seen": [
     {
-      "url_key": "mistral.ai/news/regional-inference-open-models-new-compute",
-      "title_key": "in-region inference, open models, and new european ... - mistral",
-      "url": "https://mistral.ai/news/regional-inference-open-models-new-compute",
-      "title": "In-region inference, open models, and new European ... - Mistral",
-      "date": "2026-08-12T06:01:34.807564"
-    },
-    {
-      "url_key": "logisticsmgmt.com/article/freight_capacity_tightens_as_shipping_demand_demains_uneven_u.s_bank_freight_payment_index_finds",
-      "title_key": "freight capacity tightens as shipping demand demains uneven, u.s. bank freight payment index finds - logistics management",
-      "url": "https://www.logisticsmgmt.com/article/freight_capacity_tightens_as_shipping_demand_demains_uneven_u.s_bank_freight_payment_index_finds",
-      "title": "Freight capacity tightens as shipping demand demains uneven, U.S. Bank Freight Payment Index finds - Logistics Management",
-      "date": "2026-08-12T06:01:34.807564"
-    },
-    {
-      "url_key": "bankinfosecurity.com/mistral-expands-sovereign-ai-push-european-compute-a-32527",
-      "title_key": "mistral expands sovereign ai push with european compute",
-      "url": "https://www.bankinfosecurity.com/mistral-expands-sovereign-ai-push-european-compute-a-32527",
-      "title": "Mistral Expands Sovereign AI Push With European Compute",
-      "date": "2026-08-12T06:01:34.807564"
-    },
-    {
       "url_key": "tech.einnews.com/pr_news/933462589/e2open-ocean-shipping-index-reveals-global-shipping-resilience-amid-rising-disruption",
       "title_key": "e2open ocean shipping index reveals global ...",
       "url": "https://tech.einnews.com/pr_news/933462589/e2open-ocean-shipping-index-reveals-global-shipping-resilience-amid-rising-disruption",
@@ -944,6 +923,27 @@
       "url": "https://www.stateof.ai/State-of-AI-Report-2026.pdf",
       "title": "State of AI Report 2026 - FINAL",
       "date": "2026-10-10T06:06:01.704668"
+    },
+    {
+      "url_key": "marinevesseltraffic.com/container-lines-maps/cma%20cgm",
+      "title_key": "cma cgm line container ships live fleet map with current ...",
+      "url": "https://www.marinevesseltraffic.com/container-lines-maps/CMA%20CGM",
+      "title": "CMA CGM line container ships live fleet map with current ...",
+      "date": "2026-10-11T06:06:22.055312"
+    },
+    {
+      "url_key": "fr.linkedin.com/jobs/view/senior-m-a-lawyer-at-axa-4476774096",
+      "title_key": "senior m&a lawyer chez axa — paris",
+      "url": "https://fr.linkedin.com/jobs/view/senior-m-a-lawyer-at-axa-4476774096",
+      "title": "Senior M&A Lawyer chez AXA — Paris",
+      "date": "2026-10-11T06:06:22.055312"
+    },
+    {
+      "url_key": "tradersunion.com/news/geopolitics-trade/show/3740396-cma-reviews-macquarie-eag-gas-deal",
+      "title_key": "cma reviews macquarie remedy offer for eag gas meter ...",
+      "url": "https://tradersunion.com/news/geopolitics-trade/show/3740396-cma-reviews-macquarie-eag-gas-deal",
+      "title": "CMA reviews Macquarie remedy offer for EAG gas meter ...",
+      "date": "2026-10-11T06:06:22.055312"
     }
   ],
   "words": [
@@ -1098,6 +1098,10 @@
     {
       "word": "tensor core",
       "date": "2026-10-10T06:06:01.704668"
+    },
+    {
+      "word": "eventual consistency",
+      "date": "2026-10-11T06:06:22.055312"
     }
   ],
   "quotes": [
@@ -1290,7 +1294,12 @@
       "text": "The most powerful tool we have is curiosity.",
       "author": "Satya Nadella",
       "date": "2026-10-10T06:06:01.704668"
+    },
+    {
+      "text": "Leadership is about making others better as a result of your presence and making sure that impact lasts in your absence.",
+      "author": "Sheryl Sandberg",
+      "date": "2026-10-11T06:06:22.055312"
     }
   ],
-  "last_sent_date": "2026-10-10"
+  "last_sent_date": "2026-10-11"
 }
