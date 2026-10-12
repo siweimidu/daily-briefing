@@ -1,63 +1,36 @@
 # =============================================================================
 #  Daily Briefing: your preferences
 # =============================================================================
-#  This is the ONE file to edit to make the briefing your own. It does NOT
-#  contain any secrets (API keys stay in .env / GitHub Secrets).
-#  Edit it, commit, and the next run uses your choices.
-# =============================================================================
 
-# Name shown in the email subject line and header. Make it topic-agnostic if your
-# topics aren't all "tech", e.g. "Daily Briefing", "Morning Digest", "Tom's Brief".
-title: Daily Briefing
+title: AI 日报
 
-# Small line at the bottom of the email. Set to "" to leave it out.
 footer_note: Stay ahead of the curve
 
-# How many stories the briefing contains each morning.
-num_articles: 3
+num_articles: 5
 
-# The Groq model the agent thinks with. Providers deprecate models regularly, so the
-# agent tries `model` first and degrades to `model_fallbacks` in order if it has been
-# decommissioned. A dead model slows the run down, it doesn't kill your briefing.
-# Check what's currently live: https://console.groq.com/docs/deprecations
-# You can also override the primary at runtime with the GROQ_MODEL env var.
 model: openai/gpt-oss-120b
 model_fallbacks:
   - openai/gpt-oss-20b
   - qwen/qwen3.8-27b
 
-# The topics the agent researches. Free text, written the way you'd describe
-# your interests. The agent turns these into web searches and picks the best,
-# most recent, substantive stories across them. Add, remove, reword freely.
 topics:
-  - AI & LLMs (GPT, Claude, Gemini, agents, LangChain/LangGraph, MCP)
-  - shipping & logistics tech
-  - automation & no-code (n8n, Zapier, Make)
-  - dev tools & open source
+  - AI 大模型动态（GPT、Claude、Gemini、DeepSeek、Qwen 的发布与更新）
+  - AI Agent 与工具链（MCP、LangChain、LangGraph、Agent 框架）
+  - AI 产品与应用（新产品上线、AI 创业公司融资）
+  - AI 开源项目（GitHub Trending、HuggingFace 热门模型）
+  - AI 基础设施（算力、芯片、推理优化、AI 编程工具）
 
-# OPTIONAL: a story that must ALWAYS be in the briefing, on top of your topics.
-# Useful for a niche you never want to miss. Delete this whole `focus:` block
-# if you don't want a guaranteed story.
 focus:
-  # Human label for the theme (used in the prompt and to recognise matches).
-  label: shipping / maritime / logistics
-  # Searched FIRST every run; if there's a fresh story about it, it's preferred.
-  # Leave empty ("") to just guarantee the theme without a priority subject.
-  priority_query: CMA CGM, Mistral AI
-  # Lowercase words/phrases that mark an article as belonging to this theme.
+  label: AI 基础设施 / 芯片 / 算力
+  priority_query: Nvidia AI chip datacenter October 2026
   keywords:
-    - cma cgm
-    - mistral ai
-    - shipping
-    - maritime
-    - port
-    - container
-    - freight
-    - vessel
-    - supply chain
-    - logistics
-    - cargo
-    - maersk
-    - msc
-    - hapag
-    - terminal
+    - ai chip
+    - gpu
+    - datacenter
+    - nvidia
+    - amd
+    - h100
+    - b200
+    - tpu
+    - inference
+    - compute

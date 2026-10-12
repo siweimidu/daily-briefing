@@ -123,7 +123,11 @@ def run_dry_run() -> str:
     with open(PREVIEW_FILE, "w", encoding="utf-8") as fh:
         fh.write(html_body)
 
-    print("\n" + render_text(subject, payload))
+    try:
+        print("\n" + render_text(subject, payload))
+    except UnicodeEncodeError:
+        # Windows consoles default to GBK, which chokes on characters like U+2011.
+        print("\n" + render_text(subject, payload).encode("ascii", "replace").decode("ascii"))
     print(f"Rendered email written to {PREVIEW_FILE} — open it in a browser.")
     print("Dry run: nothing was emailed, and no history was recorded.\n")
     logger.info("=== Dry run complete (nothing sent, nothing recorded) ===")
