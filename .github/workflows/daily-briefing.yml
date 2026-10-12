@@ -79,34 +79,33 @@ jobs:
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: python main.py --dry-run
 
-      - name: Commit updated history
+      - name: Commit updated state
         if: steps.gate.outputs.run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/history.json data/preview.html
-          if git diff --quiet --cached; then
-            echo "No history change to commit."
+          if git diff --cached --quiet; then
+            echo "No state change to commit."
             exit 0
           fi
-          git commit -m "chore: update article history [skip ci]"
+          git commit -m "chore: update briefing state [skip ci]"
           # The runner can be behind origin/main (concurrent triggers, code pushes),
           # which makes a plain push fail with "fetch first". Rebase onto the latest
           # main and retry a few times so the state always lands.
           for attempt in 1 2 3 4 5; do
             if git push origin HEAD:main; then
-              echo "Pushed history on attempt $attempt."
+              echo "Pushed state on attempt $attempt."
               exit 0
             fi
             echo "Push rejected (attempt $attempt); rebasing onto latest origin/main."
             git fetch origin main
             git rebase origin/main || {
-              # history.json is single-writer; on the rare conflict, keep our newer state.
-              git checkout --theirs data/history.json || true
-              git add data/history.json
+              git checkout --theirs data/history.json data/preview.html || true
+              git add data/history.json data/preview.html
               git rebase --continue || git rebase --abort
             }
             sleep 3
           done
-          echo "::error::Failed to push updated history after 5 attempts."
+          echo "::error::Failed to push updated state after 5 attempts."
           exit 1
