@@ -1,27 +1,6 @@
 {
   "seen": [
     {
-      "url_key": "tech.einnews.com/pr_news/933462589/e2open-ocean-shipping-index-reveals-global-shipping-resilience-amid-rising-disruption",
-      "title_key": "e2open ocean shipping index reveals global ...",
-      "url": "https://tech.einnews.com/pr_news/933462589/e2open-ocean-shipping-index-reveals-global-shipping-resilience-amid-rising-disruption",
-      "title": "E2open Ocean Shipping Index Reveals Global ...",
-      "date": "2026-08-13T06:01:26.686074"
-    },
-    {
-      "url_key": "cryptopolitan.com/best-ai-agent-builders-2026-no-code-low-code",
-      "title_key": "best ai agent builders in 2026: 8 no-code and low-code platforms compared - cryptopolitan",
-      "url": "https://www.cryptopolitan.com/best-ai-agent-builders-2026-no-code-low-code",
-      "title": "Best AI Agent Builders in 2026: 8 No-Code and Low-Code Platforms Compared - Cryptopolitan",
-      "date": "2026-08-13T06:01:26.686074"
-    },
-    {
-      "url_key": "venturebeat.com/infrastructure/mistral-ai-wants-to-build-1-gigawatt-of-european-compute-by-2030-and-lock-in-customers-now",
-      "title_key": "mistral ai wants to build 1 gigawatt of european compute ...",
-      "url": "https://venturebeat.com/infrastructure/mistral-ai-wants-to-build-1-gigawatt-of-european-compute-by-2030-and-lock-in-customers-now",
-      "title": "Mistral AI wants to build 1 gigawatt of European compute ...",
-      "date": "2026-08-13T06:01:26.686074"
-    },
-    {
       "url_key": "kalkine.ca/news/technology/descartes-systems-group-stock-under-pressure-after-august-12-decline-valuation-risk-and-cautious-investor-sentiment",
       "title_key": "descartes systems group stock under pressure after august 12 decline: valuation risk and cautious investor sentiment",
       "url": "https://kalkine.ca/news/technology/descartes-systems-group-stock-under-pressure-after-august-12-decline-valuation-risk-and-cautious-investor-sentiment",
@@ -944,6 +923,27 @@
       "url": "https://tradersunion.com/news/geopolitics-trade/show/3740396-cma-reviews-macquarie-eag-gas-deal",
       "title": "CMA reviews Macquarie remedy offer for EAG gas meter ...",
       "date": "2026-10-11T06:06:22.055312"
+    },
+    {
+      "url_key": "layer3labs.io/guides/mistral-ai-explained",
+      "title_key": "mistral ai is the paris lab behind vibe and mistral large 4",
+      "url": "https://www.layer3labs.io/guides/mistral-ai-explained",
+      "title": "Mistral AI Is the Paris Lab Behind Vibe and Mistral Large 4",
+      "date": "2026-10-12T06:06:31.667733"
+    },
+    {
+      "url_key": "idlprocycling.com/cycling/decathlon-cma-cgm-is-building-its-lombardy-team-around-seixas-despite-strange-preparation-we-have-high-hopes-for-this-major-classic",
+      "title_key": "lombardy is major target for seixas, despite unusual preparation",
+      "url": "https://www.idlprocycling.com/cycling/decathlon-cma-cgm-is-building-its-lombardy-team-around-seixas-despite-strange-preparation-we-have-high-hopes-for-this-major-classic",
+      "title": "Lombardy is major target for Seixas, despite unusual preparation",
+      "date": "2026-10-12T06:06:31.667733"
+    },
+    {
+      "url_key": "facebook.com/splash247/posts/ai-risks-hollowing-out-shippings-next-generation-of-expertise/1601158705389701",
+      "title_key": "ai risks hollowing out shipping's next generation of expertise",
+      "url": "https://www.facebook.com/Splash247/posts/ai-risks-hollowing-out-shippings-next-generation-of-expertise/1601158705389701",
+      "title": "AI risks hollowing out shipping's next generation of expertise",
+      "date": "2026-10-12T06:06:31.667733"
     }
   ],
   "words": [
@@ -1102,6 +1102,10 @@
     {
       "word": "eventual consistency",
       "date": "2026-10-11T06:06:22.055312"
+    },
+    {
+      "word": "load balancing",
+      "date": "2026-10-12T06:06:31.667733"
     }
   ],
   "quotes": [
@@ -1299,7 +1303,12 @@
       "text": "Leadership is about making others better as a result of your presence and making sure that impact lasts in your absence.",
       "author": "Sheryl Sandberg",
       "date": "2026-10-11T06:06:22.055312"
+    },
+    {
+      "text": "Technology is best when it brings people together.",
+      "author": "Matt Mullenweg",
+      "date": "2026-10-12T06:06:31.667733"
     }
   ],
-  "last_sent_date": "2026-10-11"
+  "last_sent_date": "2026-10-12"
 }
