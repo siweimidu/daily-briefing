@@ -78,7 +78,7 @@ def spy_send(monkeypatch):
 
 def test_a_second_trigger_on_the_same_day_sends_nothing(secrets, spy_send, monkeypatch):
     """Several morning triggers, one email — the whole point of the guard."""
-    monkeypatch.setattr(scheduler.history, "last_sent_date", lambda: scheduler._paris_today())
+    monkeypatch.setattr(scheduler.history, "last_sent_date", lambda: scheduler._today())
 
     scheduler.run_briefing()
     scheduler.run_briefing()
@@ -94,7 +94,7 @@ def test_the_first_trigger_of_the_day_sends(secrets, spy_send, monkeypatch):
 
 def test_force_overrides_the_once_a_day_guard(secrets, spy_send, monkeypatch):
     """The manual "Run workflow" test path."""
-    monkeypatch.setattr(scheduler.history, "last_sent_date", lambda: scheduler._paris_today())
+    monkeypatch.setattr(scheduler.history, "last_sent_date", lambda: scheduler._today())
     scheduler.run_briefing(force=True)
     assert spy_send == [1]
 

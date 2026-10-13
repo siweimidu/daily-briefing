@@ -3,9 +3,10 @@
 Usage:
     python main.py --setup    # guided first-time setup (checks every key)
     python main.py --dry-run  # build a briefing and preview it — sends nothing
+    python main.py --publish  # build + record + archive data/briefing.json (email if configured)
     python main.py --now      # send today's briefing now (skips if already sent today)
     python main.py --now --force   # send now even if one was already sent today
-    python main.py            # start the scheduler (daily at 09:00 Europe/Paris)
+    python main.py            # start the scheduler (daily at 09:00 local)
 """
 
 import logging
@@ -14,7 +15,13 @@ import sys
 from dotenv import load_dotenv
 
 from config import ConfigError
-from scheduler import setup_logging, start_scheduler, run_briefing, run_dry_run
+from scheduler import (
+    setup_logging,
+    start_scheduler,
+    run_briefing,
+    run_dry_run,
+    run_publish,
+)
 
 
 def main() -> int:
@@ -28,6 +35,8 @@ def main() -> int:
             return setup_wizard.main()
         if "--dry-run" in sys.argv:
             run_dry_run()
+        elif "--publish" in sys.argv:
+            run_publish(force="--force" in sys.argv)
         elif "--now" in sys.argv:
             run_briefing(force="--force" in sys.argv)
         else:

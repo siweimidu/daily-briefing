@@ -1,29 +1,25 @@
 name: Daily Briefing
 
-# Sends the briefing every morning in the 07:00-09:59 Europe/Paris window (target ~9am,
-# earlier is fine — the goal is that it goes out every single morning before 10:00).
+# Publishes the AI briefing every morning in the 08:00-11:00 Asia/Shanghai window.
 #
-# GitHub cron is UTC, has no timezone support, and is unreliable on the hour (the shared
-# scheduler is overloaded at :00 and frequently delays or drops those runs). So we fire
-# MANY times on off-peak minutes across the window; the first trigger that GitHub
-# actually runs sends the briefing, and the once-a-day idempotency guard makes every
-# later trigger a no-op. A missed/dropped trigger is always caught by the next one.
+# GitHub cron is UTC and unreliable on the hour, so we fire many times on off-peak
+# minutes across the window; the first trigger that actually runs publishes, and the
+# once-a-day idempotency guard makes every later trigger a no-op.
+#
+# Mode: --publish. It records de-dup history, archives data/preview.html (human) and
+# data/briefing.json (for n8n) into the repo, and only emails if Gmail secrets exist.
+# n8n reads: https://raw.githubusercontent.com/<owner>/<repo>/main/data/briefing.json
 
 on:
-  # Primary trigger: an external free cron (cron-job.org) calls workflow_dispatch at a
-  # fixed time (~08:00 Paris) -> punctual, because GitHub's own scheduler is unreliable.
-  # It calls WITHOUT the `force` input, so it still goes through the window + once-a-day
-  # idempotency guard and can never double-send.
   workflow_dispatch:
     inputs:
       force:
-        description: "Force send even if one was already sent today (manual test only)"
+        description: "Force publish even if one was already done today (manual test only)"
         type: boolean
         default: false
-  # Backup trigger: GitHub's own cron. Best-effort only (often delayed/dropped on low
-  # activity repos); idempotency means it just confirms the day if the pinger already sent.
   schedule:
-    - cron: "11,33,55 5,6,7,8 * * *"
+    # UTC 00:11/00:33/00:55, 01:11/01:33/01:55, 02:11 = Beijing 08:11-10:11
+    - cron: "11,33,55 0,1,2 * * *"
 
 permissions:
   contents: write
@@ -37,20 +33,18 @@ jobs:
         with:
           fetch-depth: 0   # full history so we can rebase before pushing the updated state
 
-      - name: Gate (force only on a manual human run; otherwise 06-11 Paris + idempotency)
+      - name: Gate (force only on a manual human run; otherwise 08-11 Beijing + idempotency)
         id: gate
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.event.inputs.force }}" = "true" ]; then
-            echo "Manual forced run -> send unconditionally."
+            echo "Manual forced run -> publish unconditionally."
             echo "run=true" >> "$GITHUB_OUTPUT"
             echo "force=--force" >> "$GITHUB_OUTPUT"
           else
-            # Pinger dispatch or GitHub schedule: only inside the morning window, and the
-            # once-a-day idempotency guard (in Python) decides whether to actually send.
-            H=$(TZ=Europe/Paris date +%H)
-            echo "Current Paris hour: $H"
+            H=$(TZ=Asia/Shanghai date +%H)
+            echo "Current Beijing hour: $H"
             case "$H" in
-              06|07|08|09|10|11) echo "run=true" >> "$GITHUB_OUTPUT" ;;
+              08|09|10|11) echo "run=true" >> "$GITHUB_OUTPUT" ;;
               *) echo "run=false" >> "$GITHUB_OUTPUT" ;;
             esac
             echo "force=" >> "$GITHUB_OUTPUT"
@@ -66,7 +60,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: pip install -r requirements.txt
 
-      - name: Send briefing
+      - name: Publish briefing
         if: steps.gate.outputs.run == 'true'
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -77,19 +71,19 @@ jobs:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        run: python main.py --dry-run
+        run: python main.py --publish ${{ steps.gate.outputs.force }}
 
       - name: Commit updated state
         if: steps.gate.outputs.run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/history.json data/preview.html
+          git add data/history.json data/preview.html data/briefing.json
           if git diff --cached --quiet; then
             echo "No state change to commit."
             exit 0
           fi
-          git commit -m "chore: update briefing state [skip ci]"
+          git commit -m "chore: publish briefing state [skip ci]"
           # The runner can be behind origin/main (concurrent triggers, code pushes),
           # which makes a plain push fail with "fetch first". Rebase onto the latest
           # main and retry a few times so the state always lands.
@@ -101,8 +95,8 @@ jobs:
             echo "Push rejected (attempt $attempt); rebasing onto latest origin/main."
             git fetch origin main
             git rebase origin/main || {
-              git checkout --theirs data/history.json data/preview.html || true
-              git add data/history.json data/preview.html
+              git checkout --theirs data/history.json data/preview.html data/briefing.json || true
+              git add data/history.json data/preview.html data/briefing.json
               git rebase --continue || git rebase --abort
             }
             sleep 3
