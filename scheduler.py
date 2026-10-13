@@ -189,6 +189,17 @@ def run_publish(force: bool = False) -> None:
     else:
         logger.info("No Gmail secrets set — archived only (n8n reads data/briefing.json).")
 
+    # Telegram push: same content, phone-readable. A failure here never fails the run.
+    import telegram_sender
+
+    if telegram_sender.is_configured():
+        try:
+            telegram_sender.send_message(subject, payload)
+        except Exception as exc:  # noqa: BLE001
+            logger.error("Telegram push failed: %s", exc)
+    else:
+        logger.info("Telegram not configured (TELEGRAM_BOT_TOKEN/CHAT_ID) — skipped.")
+
     print(f"Published: {len(doc['articles'])} article(s) -> {PREVIEW_FILE}, {BRIEFING_FILE}")
 
 
