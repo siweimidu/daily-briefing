@@ -1,4 +1,4 @@
-"""Email delivery via Gmail SMTP."""
+"""Email delivery via SMTP (Gmail by default; any SSL provider via SMTP_HOST/SMTP_PORT)."""
 
 import os
 import ssl
@@ -9,32 +9,44 @@ from email.mime.multipart import MIMEMultipart
 
 logger = logging.getLogger("briefing.email")
 
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = 465
+DEFAULT_SMTP_HOST = "smtp.gmail.com"
+DEFAULT_SMTP_PORT = 465
+
+
+def _smtp_host() -> str:
+    return (os.getenv("SMTP_HOST") or "").strip() or DEFAULT_SMTP_HOST
+
+
+def _smtp_port() -> int:
+    try:
+        return int((os.getenv("SMTP_PORT") or "").strip() or DEFAULT_SMTP_PORT)
+    except ValueError:
+        return DEFAULT_SMTP_PORT
 
 
 def _send(subject: str, html_body: str) -> None:
-    """Low-level Gmail SMTP send to RECIPIENT_EMAIL. Raises on failure."""
-    gmail_address = os.getenv("GMAIL_ADDRESS")
-    gmail_password = os.getenv("GMAIL_APP_PASSWORD")
+    """Low-level SMTP SSL send to RECIPIENT_EMAIL. Raises on failure."""
+    sender_address = os.getenv("GMAIL_ADDRESS")
+    sender_password = os.getenv("GMAIL_APP_PASSWORD")
     recipient = os.getenv("RECIPIENT_EMAIL")
 
-    if not all([gmail_address, gmail_password, recipient]):
+    if not all([sender_address, sender_password, recipient]):
         raise RuntimeError(
             "Missing email config: GMAIL_ADDRESS, GMAIL_APP_PASSWORD or RECIPIENT_EMAIL"
         )
 
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
-    message["From"] = gmail_address
+    message["From"] = sender_address
     message["To"] = recipient
     message.attach(MIMEText(html_body, "html", "utf-8"))
 
     context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context) as server:
-        server.login(gmail_address, gmail_password)
-        server.sendmail(gmail_address, recipient, message.as_string())
-    logger.info("Email sent to %s", recipient)
+    host, port = _smtp_host(), _smtp_port()
+    with smtplib.SMTP_SSL(host, port, context=context, timeout=30) as server:
+        server.login(sender_address, sender_password)
+        server.sendmail(sender_address, recipient, message.as_string())
+    logger.info("Email sent to %s via %s:%d", recipient, host, port)
 
 
 def send_email(subject: str, html_body: str) -> None:
