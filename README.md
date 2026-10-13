@@ -32,6 +32,108 @@ up, and you close the tab and get on with your day.
 
 ---
 
+# 这份 fork 在你系统里是什么（中文说明）
+
+> 下面是**你这套部署的实际状态**。再往下的英文部分是上游原项目的说明，
+> 描述的是"默认发邮件"的用法，和这里的配置不完全一致（时区、推送方式都改过）。
+
+## 它负责什么
+
+每天用 **Tavily 实时搜索 + Groq 模型**，围绕你 `config.yaml` 里的主题研究当天的 AI 新闻，
+挑出 5 条、写成摘要，并记住发过什么（同一条新闻永不重复推送）。
+
+它是整套日报的**第 2 步**：
+
+| 时间（北京） | 在哪跑 | 干什么 |
+|---|---|---|
+| 08:02 | [ai-daily-sources](https://github.com/siweimidu/ai-daily-sources) | 抓 4 个现成站 + 镜像配图 |
+| **08:11** | **本仓库 Actions** | **检索精选 5 条 → 存档** |
+| 08:25 | 本机 n8n | 读两份 JSON → LLM 汇总 → Telegram + QQ 邮箱 |
+
+**在线日报在这里看：https://siweimidu.github.io/ai-daily-sources/**
+本仓库是自动化脚本仓库，没有网页，打开只有代码——这是正常的。
+
+## 当前配置（和上游不同之处）
+
+| 项 | 现在这样 | 上游默认 |
+|---|---|---|
+| 运行模式 | `python main.py --publish` | `--now`（生成即发邮件） |
+| 是否推送 | **不推送**（仓库变量 `PUSH_ENABLED=false`），只存档给 n8n | 发邮件 |
+| 主题 | 纯 AI 日报（大模型 / Agent / 产品 / 开源 / 算力） | 含航运物流 |
+| 每天条数 | 5 | 3 |
+| 定时窗口 | 北京时间 08:00–11:00 | 巴黎时间 06:00–11:00 |
+| 邮件通道 | 支持任意 SMTP（`SMTP_HOST`/`SMTP_PORT`），已配 QQ 邮箱 | 写死 Gmail |
+| 额外通道 | 新增 Telegram 推送（`telegram_sender.py`） | 无 |
+
+改这些只需要动两个文件：主题和条数改 `config.yaml`，推送与否改仓库变量。
+
+## 产出在哪
+
+每次运行后提交回 `main` 分支：
+
+```
+https://raw.githubusercontent.com/siweimidu/daily-briefing/main/data/briefing.json
+https://raw.githubusercontent.com/siweimidu/daily-briefing/main/data/preview.html
+```
+
+- `briefing.json` — 给 n8n 读的机器格式：`{date, articles:[{url,title,summary}], word, quote}`
+- `preview.html` — 渲染好的邮件样式，浏览器直接打开就能看
+- `data/history.json` — 去重记忆（60 天内不重复），Actions 每天自动更新
+
+## 三种运行模式
+
+```bash
+python main.py --dry-run   # 只生成、只打印，不发任何东西、不记历史（试配置用）
+python main.py --publish   # 生成 + 记历史 + 存档两个文件；配了 SMTP/TG 才推送
+python main.py --now       # 原版行为：生成 + 发邮件 + 记历史
+```
+
+`--publish` 是这套系统在用的模式。它先看 `PUSH_ENABLED`，为 `false` 时**只存档不推送**；
+为 `true`（默认）时按凭据存在与否决定：有 `GMAIL_ADDRESS`+`GMAIL_APP_PASSWORD`+`RECIPIENT_EMAIL`
+就发邮件，有 `TELEGRAM_BOT_TOKEN`+`TELEGRAM_CHAT_ID` 就发 Telegram，任一失败都不影响存档。
+
+## 已配置的 Secrets（Settings → Secrets and variables → Actions）
+
+| 名称 | 用途 |
+|---|---|
+| `GROQ_API_KEY` | AI 大脑（免费档有**每日 token 上限**，见下方注意） |
+| `TAVILY_API_KEY` | 实时搜索 |
+| `GMAIL_ADDRESS` / `GMAIL_APP_PASSWORD` | 发件邮箱 + 授权码（名字叫 GMAIL_，实际任意 SMTP 都能用） |
+| `RECIPIENT_EMAIL` | 收件人 |
+| `SMTP_HOST` / `SMTP_PORT` | `smtp.qq.com` / `465` |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | Telegram 推送 |
+| 变量 `PUSH_ENABLED` | `false` = 只存档；改成 `true` 就恢复自己推送 |
+
+## 手动跑一次
+
+**Actions → Daily Briefing → Run workflow → 勾选 force**（force 跳过"一天只跑一次"的守卫）。
+跑完在仓库 `data/` 目录能看到当天产物。
+
+## ⚠️ 两个必须知道的坑
+
+**1. Groq 免费档是「每日 20 万 token」限额（TPD），不是每分钟。**
+一天正常跑 1 次约用 2–3 万，够用；但**别一天手动触发太多次**，用完当天就 429 报错，
+要到 UTC 零点才恢复。触发前想确认余量，可以看 Actions 日志里有没有 `RateLimitError`。
+
+**2. GitHub 自带的 cron 不准时**，可能延迟或丢触发。所以 workflow 在 08:00–11:00 窗口内
+多次触发（`cron: "11,33,55 0,1,2 * * *"`），第一次真正跑成的那次生效，后面全是空操作。
+要更准时可以配 cron-job.org 免费外部定时器（方法见下方英文 "set up the free cron pinger"）。
+
+## 本地跑
+
+```bash
+git clone https://github.com/siweimidu/daily-briefing.git
+cd daily-briefing
+pip install -r requirements.txt
+cp .env.example .env      # 填 GROQ_API_KEY、TAVILY_API_KEY
+python main.py --dry-run  # 只两个 key 就能跑，不发邮件
+```
+
+Windows 上如果控制台打印中文/特殊字符报错，加 `python -X utf8 main.py --dry-run`
+（编码问题已在 `scheduler.py` 里修过）。
+
+---
+
 ## Try it in 2 minutes
 
 You need **two free API keys**. No Gmail, no deploy, no account anywhere else.
