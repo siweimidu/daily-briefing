@@ -180,6 +180,15 @@ def run_publish(force: bool = False) -> None:
     # can never cause the same stories to be re-sent the next morning.
     history.record_sent(payload["articles"], payload.get("word", {}), payload.get("quote", {}), today)
 
+    # Delivery is opt-out so this repo can run as a pure data source: with
+    # PUSH_ENABLED=false it only writes briefing.json and n8n does the publishing.
+    push = (os.getenv("PUSH_ENABLED") or "true").strip().lower() != "false"
+
+    if not push:
+        logger.info("PUSH_ENABLED=false — archived only, n8n will publish from data/briefing.json.")
+        print(f"Published: {len(doc['articles'])} article(s) -> {PREVIEW_FILE}, {BRIEFING_FILE} (push disabled)")
+        return
+
     if _delivery_configured():
         try:
             send_email(subject, html_body)
